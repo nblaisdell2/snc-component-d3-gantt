@@ -5,18 +5,30 @@
  *   - group: used for color-by-group + the legend
  *   - progress: 0..1 (or 0..100); drives the progress overlay
  *
- * A small change/project schedule across ~7 weeks of mid-2025, with a few
- * overlapping tasks so the timeline reads as a real Gantt.
+ * A small change/project schedule spanning ~15 weeks, generated relative to the
+ * current date so "today" always lands mid-schedule (during Core development)
+ * and the today reference line is visible out of the box.
  */
+
+// Anchor day 0 ≈ 29 days ago; format as local 'YYYY-MM-DD' (matches DAY_PARSE).
+const day = (offset) => {
+	const d = new Date();
+	d.setHours(0, 0, 0, 0);
+	d.setDate(d.getDate() - 29 + offset);
+	const mm = String(d.getMonth() + 1).padStart(2, '0');
+	const dd = String(d.getDate()).padStart(2, '0');
+	return `${d.getFullYear()}-${mm}-${dd}`;
+};
+
 export const SAMPLE_DATA = [
-	{ id: 'T1', task: 'Requirements & scoping', group: 'Planning', start: '2025-06-02', end: '2025-06-13', progress: 1 },
-	{ id: 'T2', task: 'Solution design', group: 'Planning', start: '2025-06-11', end: '2025-06-24', progress: 0.9 },
-	{ id: 'T3', task: 'Environment provisioning', group: 'Build', start: '2025-06-23', end: '2025-07-02', progress: 0.75 },
-	{ id: 'T4', task: 'Core development', group: 'Build', start: '2025-06-30', end: '2025-07-25', progress: 0.5 },
-	{ id: 'T5', task: 'Integrations', group: 'Build', start: '2025-07-14', end: '2025-08-01', progress: 0.3 },
-	{ id: 'T6', task: 'Unit & functional testing', group: 'Test', start: '2025-07-28', end: '2025-08-15', progress: 0.1 },
-	{ id: 'T7', task: 'UAT', group: 'Test', start: '2025-08-11', end: '2025-08-22', progress: 0 },
-	{ id: 'T8', task: 'Cutover rehearsal', group: 'Deploy', start: '2025-08-20', end: '2025-08-27', progress: 0 },
-	{ id: 'T9', task: 'Production deployment', group: 'Deploy', start: '2025-08-28', end: '2025-09-01', progress: 0 },
-	{ id: 'T10', task: 'Hypercare & handover', group: 'Deploy', start: '2025-09-01', end: '2025-09-12', progress: 0 }
+	{ id: 'T1', task: 'Requirements & scoping', group: 'Planning', start: day(0), end: day(11), progress: 1 },
+	{ id: 'T2', task: 'Solution design', group: 'Planning', start: day(9), end: day(22), progress: 0.9 },
+	{ id: 'T3', task: 'Environment provisioning', group: 'Build', start: day(21), end: day(30), progress: 0.75 },
+	{ id: 'T4', task: 'Core development', group: 'Build', start: day(28), end: day(53), progress: 0.5 },
+	{ id: 'T5', task: 'Integrations', group: 'Build', start: day(42), end: day(60), progress: 0.3 },
+	{ id: 'T6', task: 'Unit & functional testing', group: 'Test', start: day(56), end: day(74), progress: 0.1 },
+	{ id: 'T7', task: 'UAT', group: 'Test', start: day(70), end: day(81), progress: 0 },
+	{ id: 'T8', task: 'Cutover rehearsal', group: 'Deploy', start: day(79), end: day(86), progress: 0 },
+	{ id: 'T9', task: 'Production deployment', group: 'Deploy', start: day(87), end: day(91), progress: 0 },
+	{ id: 'T10', task: 'Hypercare & handover', group: 'Deploy', start: day(91), end: day(102), progress: 0 }
 ];

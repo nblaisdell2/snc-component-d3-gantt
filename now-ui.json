@@ -1,6 +1,6 @@
 {
   "components": {
-    "x-1295779-gantt-chart-uic": {
+    "x-2114311-gantt-chart-uic": {
       "innerComponents": [],
       "uiBuilder": {
         "associatedTypes": ["global.core", "global.landing-page"],
@@ -122,6 +122,27 @@
           "defaultValue": 0.9
         },
         {
+          "name": "dropShadow",
+          "label": "Drop shadow · Drop shadow",
+          "description": "Apply a soft drop shadow to the columns.",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "shadowColor",
+          "label": "Drop shadow · Shadow color (when drop shadow on)",
+          "description": "Color of the column drop shadow (supports rgba).",
+          "fieldType": "string",
+          "defaultValue": "rgba(0,0,0,0.25)"
+        },
+        {
+          "name": "shadowBlur",
+          "label": "Drop shadow · Shadow blur (when drop shadow on)",
+          "description": "Blur radius of the drop shadow, in pixels.",
+          "fieldType": "number",
+          "defaultValue": 4
+        },
+        {
           "name": "showProgress",
           "label": "Display · Show progress",
           "description": "Draw a darker inner overlay spanning each task's 'progress' fraction.",
@@ -176,11 +197,13 @@
           "description": "Place task labels inside the bar or to the right of it.",
           "fieldType": "choice",
           "defaultValue": "right",
-          "typeMetadata": { "variant": "dropdown" },
-          "choices": [
-            { "label": "Inside", "value": "inside" },
-            { "label": "Right of bar", "value": "right" }
-          ]
+          "typeMetadata": {
+            "variant": "dropdown",
+            "choices": [
+              { "label": "Inside", "value": "inside" },
+              { "label": "Right of bar", "value": "right" }
+            ]
+          }
         },
         {
           "name": "labelColor",
@@ -190,17 +213,26 @@
           "defaultValue": "#374151"
         },
         {
+          "name": "labelFontSize",
+          "label": "Data label · Font size",
+          "description": "Font size (px) for the value labels drawn inside the columns.",
+          "fieldType": "number",
+          "defaultValue": 12
+        },
+        {
           "name": "axisPosition",
           "label": "Axis · Time axis position",
           "description": "Where to draw the time axis.",
           "fieldType": "choice",
           "defaultValue": "top",
-          "typeMetadata": { "variant": "dropdown" },
-          "choices": [
-            { "label": "Top", "value": "top" },
-            { "label": "Bottom", "value": "bottom" },
-            { "label": "Both", "value": "both" }
-          ]
+          "typeMetadata": {
+            "variant": "dropdown",
+            "choices": [
+              { "label": "Top", "value": "top" },
+              { "label": "Bottom", "value": "bottom" },
+              { "label": "Both", "value": "both" }
+            ]
+          }
         },
         {
           "name": "dateFormat",
@@ -224,36 +256,43 @@
           "defaultValue": "#e5e7eb"
         },
         {
+          "name": "showXGridlines",
+          "label": "X-axis · Show gridlines",
+          "description": "Draw gridlines along the category axis (vertical lines for columns, horizontal for bars), in addition to the value-axis gridlines.",
+          "fieldType": "boolean",
+          "defaultValue": false
+        },
+        {
           "name": "showToday",
-          "label": "Axis · Show today line",
+          "label": "Time markers · Show today line",
           "description": "Draw a dashed reference line at today's date (or 'Today date' override).",
           "fieldType": "boolean",
           "defaultValue": true
         },
         {
           "name": "todayDate",
-          "label": "Axis · Today date",
+          "label": "Time markers · Today date",
           "description": "Override for the 'today' reference line. Date string ('YYYY-MM-DD' or ISO). Leave blank to use the current date.",
           "fieldType": "string",
           "defaultValue": ""
         },
         {
           "name": "todayColor",
-          "label": "Axis · Today line color",
+          "label": "Time markers · Today line color",
           "description": "Color of the today reference line.",
           "fieldType": "string",
           "defaultValue": "#ef4444"
         },
         {
           "name": "showWeekends",
-          "label": "Axis · Shade weekends",
+          "label": "Time markers · Shade weekends",
           "description": "Shade Saturday/Sunday columns with a light band.",
           "fieldType": "boolean",
           "defaultValue": false
         },
         {
           "name": "weekendColor",
-          "label": "Axis · Weekend shade color",
+          "label": "Time markers · Weekend shade color",
           "description": "Fill color of the weekend shading bands.",
           "fieldType": "string",
           "defaultValue": "#f3f4f6"
@@ -280,6 +319,13 @@
           "defaultValue": 12
         },
         {
+          "name": "axisFontFamily",
+          "label": "Axes · Font family",
+          "description": "CSS font-family for the x/y axis tick values and axis titles. Blank = use the base font family.",
+          "fieldType": "string",
+          "defaultValue": ""
+        },
+        {
           "name": "useSeriesColors",
           "label": "Colors · Use task colors",
           "description": "Use each task's own 'color' when present (overrides group coloring for that task).",
@@ -292,18 +338,20 @@
           "description": "Categorical palette used to color groups. 'custom' uses the Color palette below.",
           "fieldType": "choice",
           "defaultValue": "tableau10",
-          "typeMetadata": { "variant": "dropdown" },
-          "choices": [
-            { "label": "Custom palette", "value": "custom" },
-            { "label": "Category10", "value": "category10" },
-            { "label": "Tableau10", "value": "tableau10" },
-            { "label": "Set2", "value": "set2" },
-            { "label": "Set3", "value": "set3" },
-            { "label": "Paired", "value": "paired" },
-            { "label": "Dark2", "value": "dark2" },
-            { "label": "Pastel1", "value": "pastel1" },
-            { "label": "Accent", "value": "accent" }
-          ]
+          "typeMetadata": {
+            "variant": "dropdown",
+            "choices": [
+              { "label": "Custom palette", "value": "custom" },
+              { "label": "Category10", "value": "category10" },
+              { "label": "Tableau10", "value": "tableau10" },
+              { "label": "Set2", "value": "set2" },
+              { "label": "Set3", "value": "set3" },
+              { "label": "Paired", "value": "paired" },
+              { "label": "Dark2", "value": "dark2" },
+              { "label": "Pastel1", "value": "pastel1" },
+              { "label": "Accent", "value": "accent" }
+            ]
+          }
         },
         {
           "name": "colorPalette",
@@ -324,12 +372,28 @@
           "description": "Where to place the group legend.",
           "fieldType": "choice",
           "defaultValue": "bottom",
-          "typeMetadata": { "variant": "dropdown" },
-          "choices": [
-            { "label": "Top", "value": "top" },
-            { "label": "Right", "value": "right" },
-            { "label": "Bottom", "value": "bottom" }
-          ]
+          "typeMetadata": {
+            "variant": "dropdown",
+            "choices": [
+              { "label": "Top", "value": "top" },
+              { "label": "Right", "value": "right" },
+              { "label": "Bottom", "value": "bottom" }
+            ]
+          }
+        },
+        {
+          "name": "legendFontSize",
+          "label": "Legend · Font size",
+          "description": "Font size (px) for the legend text.",
+          "fieldType": "number",
+          "defaultValue": 12
+        },
+        {
+          "name": "legendInteractive",
+          "label": "Legend · Clickable to toggle series",
+          "description": "Let viewers click a legend item to hide/show that series; the chart rescales to the remaining series. Hidden items stay in the legend (dimmed) so they can be toggled back.",
+          "fieldType": "boolean",
+          "defaultValue": false
         },
         {
           "name": "fontFamily",
@@ -358,17 +422,26 @@
           "description": "Easing curve for the grow-in animation.",
           "fieldType": "choice",
           "defaultValue": "cubicOut",
-          "typeMetadata": { "variant": "dropdown" },
-          "choices": [
-            { "label": "Linear", "value": "linear" },
-            { "label": "Cubic out", "value": "cubicOut" },
-            { "label": "Cubic in-out", "value": "cubicInOut" },
-            { "label": "Quad out", "value": "quadOut" },
-            { "label": "Exp out", "value": "expOut" },
-            { "label": "Back out", "value": "backOut" },
-            { "label": "Bounce out", "value": "bounceOut" },
-            { "label": "Elastic out", "value": "elasticOut" }
-          ]
+          "typeMetadata": {
+            "variant": "dropdown",
+            "choices": [
+              { "label": "Linear", "value": "linear" },
+              { "label": "Cubic out", "value": "cubicOut" },
+              { "label": "Cubic in-out", "value": "cubicInOut" },
+              { "label": "Quad out", "value": "quadOut" },
+              { "label": "Exp out", "value": "expOut" },
+              { "label": "Back out", "value": "backOut" },
+              { "label": "Bounce out", "value": "bounceOut" },
+              { "label": "Elastic out", "value": "elasticOut" }
+            ]
+          }
+        },
+        {
+          "name": "animationStagger",
+          "label": "Animation · Animation stagger (ms)",
+          "description": "Delay between categories for a cascade grow-in (0 = all bars animate together).",
+          "fieldType": "number",
+          "defaultValue": 0
         },
         {
           "name": "hoverHighlight",
@@ -376,6 +449,13 @@
           "description": "Outline the hovered task bar.",
           "fieldType": "boolean",
           "defaultValue": true
+        },
+        {
+          "name": "hoverColor",
+          "label": "Display · Hover color (when hover highlight on)",
+          "description": "Color a column turns on hover. Blank = automatically brighten the column's own color.",
+          "fieldType": "string",
+          "defaultValue": ""
         },
         {
           "name": "hoverDimOthers",
@@ -433,7 +513,11 @@
           "label": "Chart clicked",
           "description": "Fired when the user clicks the chart background (not a specific task bar).",
           "payload": [
-            { "name": "taskCount", "label": "Task count", "description": "How many tasks are rendered." }
+            {
+              "name": "taskCount",
+              "label": "Task count",
+              "description": "How many tasks are rendered."
+            }
           ]
         },
         {
@@ -441,11 +525,31 @@
           "label": "Task clicked",
           "description": "Fired when the user clicks a task bar.",
           "payload": [
-            { "name": "id", "label": "Task id", "description": "Id of the clicked task." },
-            { "name": "task", "label": "Task name", "description": "Name of the clicked task." },
-            { "name": "group", "label": "Group", "description": "Group of the clicked task." },
-            { "name": "start", "label": "Start", "description": "Formatted start date of the task." },
-            { "name": "end", "label": "End", "description": "Formatted end date of the task." }
+            {
+              "name": "id",
+              "label": "Task id",
+              "description": "Id of the clicked task."
+            },
+            {
+              "name": "task",
+              "label": "Task name",
+              "description": "Name of the clicked task."
+            },
+            {
+              "name": "group",
+              "label": "Group",
+              "description": "Group of the clicked task."
+            },
+            {
+              "name": "start",
+              "label": "Start",
+              "description": "Formatted start date of the task."
+            },
+            {
+              "name": "end",
+              "label": "End",
+              "description": "Formatted end date of the task."
+            }
           ]
         },
         {
@@ -453,12 +557,20 @@
           "label": "Task hovered",
           "description": "Fired when the user hovers a task bar. Useful for syncing external tooltips or details panels.",
           "payload": [
-            { "name": "id", "label": "Task id", "description": "Id of the hovered task." },
-            { "name": "task", "label": "Task name", "description": "Name of the hovered task." }
+            {
+              "name": "id",
+              "label": "Task id",
+              "description": "Id of the hovered task."
+            },
+            {
+              "name": "task",
+              "label": "Task name",
+              "description": "Name of the hovered task."
+            }
           ]
         }
       ]
     }
   },
-  "scopeName": "x_1295779_gantt_0"
+  "scopeName": "x_2114311_gantt_0"
 }

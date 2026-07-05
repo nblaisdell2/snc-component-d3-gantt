@@ -131,8 +131,22 @@ const normalizeTasks = (raw) => {
 	return out;
 };
 
+// Per-render sequence for SVG element ids (clipPaths). Ids are already scoped
+// per shadow root; the counter guards against multiple charts sharing a tree.
+let renderSeq = 0;
+
 export function drawChart(container, props, dispatch) {
-	const tasks = normalizeTasks(props.data);
+	const renderId = (renderSeq += 1);
+	// legendInteractive hides tasks by group; the hidden set lives on the stable
+	// container node so it survives the redraw a legend click triggers.
+	const legendInteractive = props.legendInteractive === true;
+	const allTasks = normalizeTasks(props.data);
+	const hidden = legendInteractive
+		? (container.__gcHidden instanceof Set ? container.__gcHidden : (container.__gcHidden = new Set()))
+		: new Set();
+	const tasks = legendInteractive
+		? allTasks.filter((t) => !t.group || !hidden.has(t.group))
+		: allTasks;
 
 	// ----- look-and-feel props -----
 	const backgroundColor = props.backgroundColor || 'transparent';
@@ -147,6 +161,10 @@ export function drawChart(container, props, dispatch) {
 	const barColor = props.barColor || '#2E93fA';
 	const barOpacity = Math.max(0, Math.min(1, num(props.barOpacity, 0.9)));
 
+	const dropShadow = props.dropShadow !== false;
+	const shadowBlur = Math.max(0, num(props.shadowBlur, 4));
+	const shadowColor = props.shadowColor || 'rgba(0,0,0,0.25)';
+
 	const showProgress = props.showProgress !== false;
 	const progressColor = props.progressColor || '';
 
@@ -158,11 +176,13 @@ export function drawChart(container, props, dispatch) {
 	const showTaskLabels = props.showTaskLabels === true;
 	const labelPosition = props.labelPosition === 'inside' ? 'inside' : 'right';
 	const labelColor = props.labelColor || '#374151';
+	const labelFontSize = num(props.labelFontSize, 12);
 
 	const axisPosition = ['top', 'bottom', 'both'].indexOf(props.axisPosition) > -1 ? props.axisPosition : 'top';
 	const dateFormat = isBlank(props.dateFormat) ? '%b %-d' : props.dateFormat;
 	const showGridlines = props.showGridlines !== false;
 	const gridColor = props.gridColor || '#e5e7eb';
+	const showXGridlines = props.showXGridlines === true;
 
 	const showToday = props.showToday !== false;
 	const todayColor = props.todayColor || '#ef4444';
@@ -178,15 +198,19 @@ export function drawChart(container, props, dispatch) {
 	const axisColor = props.axisColor || '#6b7280';
 	const axisTextColor = props.axisTextColor || '#6b7280';
 	const axisFontSize = num(props.axisFontSize, 12);
+	const axisFontFamily = props.axisFontFamily || fontFamily;
 
 	const showLegend = props.showLegend !== false;
 	const legendPosition = ['top', 'right', 'bottom'].indexOf(props.legendPosition) > -1 ? props.legendPosition : 'bottom';
+	const legendFontSize = num(props.legendFontSize, 12);
 
 	const animationDuration = Math.max(0, num(props.animationDuration, 800));
 	const animate = props.animate !== false && animationDuration > 0;
 	const easeFn = EASINGS[props.animationEasing] || easeCubicOut;
+	const animationStagger = Math.max(0, num(props.animationStagger, 0));
 
 	const hoverHighlight = props.hoverHighlight !== false;
+	const hoverColor = props.hoverColor || '';
 	const hoverDimOthers = props.hoverDimOthers === true;
 
 	const showTooltip = props.showTooltip !== false;
@@ -320,9 +344,16 @@ export function drawChart(container, props, dispatch) {
 	}
 
 	// ----- gridlines + time axis/axes -----
-	const axisGenTop = axisTop(x).tickSizeOuter(0).tickFormat(fmtDate);
-	const axisGenBottom = axisBottom(x).tickSizeOuter(0).tickFormat(fmtDate);
+	// Thin the axis labels by a stride when they'd overlap at the current width;
+	// gridlines keep the full tick density.
 	const ticks = x.ticks();
+	const maxLabelChars = ticks.reduce((m, t) => Math.max(m, fmtDate(t).length), 0);
+	const maxLabelW = maxLabelChars * axisFontSize * 0.6 + 12;
+	const maxTicks = Math.max(2, Math.floor(innerW / maxLabelW));
+	const stride = Math.ceil(ticks.length / maxTicks);
+	const axisTicks = stride > 1 ? ticks.filter((t, i) => i % stride === 0) : ticks;
+	const axisGenTop = axisTop(x).tickSizeOuter(0).tickFormat(fmtDate).tickValues(axisTicks);
+	const axisGenBottom = axisBottom(x).tickSizeOuter(0).tickFormat(fmtDate).tickValues(axisTicks);
 
 	if (showGridlines) {
 		const grid = plot.append('g').attr('class', 'gc-grid').style('pointer-events', 'none');
@@ -428,6 +459,20 @@ export function drawChart(container, props, dispatch) {
 		};
 	});
 
+	const shadowId = `gc${renderId}-shadow`;
+	if (dropShadow) {
+		const shadowDefs = svg.append('defs');
+		shadowDefs.append('filter')
+			.attr('id', shadowId)
+			.attr('x', '-30%').attr('y', '-30%')
+			.attr('width', '160%').attr('height', '160%')
+			.append('feDropShadow')
+			.attr('dx', 0)
+			.attr('dy', 1)
+			.attr('stdDeviation', shadowBlur)
+			.attr('flood-color', shadowColor);
+	}
+
 	const groupSel = barLayer.selectAll('g.gc-bar').data(rows).join('g')
 		.attr('class', 'gc-bar')
 		.style('cursor', 'pointer');
@@ -438,15 +483,27 @@ export function drawChart(container, props, dispatch) {
 		.attr('width', (d) => d.w).attr('height', band)
 		.attr('rx', Math.min(barRadius, band / 2)).attr('ry', Math.min(barRadius, band / 2))
 		.attr('fill', (d) => d.fill)
-		.attr('fill-opacity', barOpacity);
+		.attr('fill-opacity', barOpacity)
+		.attr('filter', dropShadow ? `url(#${shadowId})` : null);
 
-	// progress overlay
+	// progress overlay, clipped to the bar's rounded outline so a small amount
+	// reads as a sliver hugging the left edge instead of a detached ellipse
 	if (showProgress) {
-		groupSel.filter((d) => d.t.progress !== null && d.t.progress > 0).append('rect')
+		const defs = svg.append('defs');
+		const clipId = (d) => `gc${renderId}-clip${d.i}`;
+		const withProgress = groupSel.filter((d) => d.t.progress !== null && d.t.progress > 0);
+		withProgress.each(function (d) {
+			defs.append('clipPath').attr('id', clipId(d))
+				.append('rect')
+				.attr('x', d.x0).attr('y', d.yPos)
+				.attr('width', d.w).attr('height', band)
+				.attr('rx', Math.min(barRadius, band / 2)).attr('ry', Math.min(barRadius, band / 2));
+		});
+		withProgress.append('rect')
 			.attr('class', 'gc-bar-progress')
 			.attr('x', (d) => d.x0).attr('y', (d) => d.yPos)
 			.attr('width', (d) => Math.max(0, d.w * d.t.progress)).attr('height', band)
-			.attr('rx', Math.min(barRadius, band / 2)).attr('ry', Math.min(barRadius, band / 2))
+			.attr('clip-path', (d) => `url(#${clipId(d)})`)
 			.attr('fill', (d) => (progressColor ? progressColor : darken(d.fill, 0.9)))
 			.attr('fill-opacity', Math.min(1, barOpacity + 0.1))
 			.style('pointer-events', 'none');

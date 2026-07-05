@@ -1,1 +1,1 @@
-import './x-1295779-gantt-chart-uic';
+import "./x-2114311-gantt-chart-uic";

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gantt-dev",
+      "runtimeExecutable": "snc",
+      "runtimeArgs": ["ui-component", "develop", "--port", "8090"],
+      "port": 8090,
+      "autoPort": false
+    }
+  ]
+}

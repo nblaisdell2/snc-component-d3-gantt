@@ -1,0 +1,90 @@
+[
+  {
+    "name": "table",
+    "label": "Table",
+    "description": "Task/schedule table to query, e.g. 'change_request', 'pm_project_task', 'sc_task'.",
+    "fieldType": "string",
+    "mandatory": true,
+    "defaultValue": "change_request"
+  },
+  {
+    "name": "filter",
+    "label": "Filter (encoded query)",
+    "description": "Optional encoded query to scope the rows, e.g. 'active=true'.",
+    "fieldType": "string",
+    "defaultValue": ""
+  },
+  {
+    "name": "taskField",
+    "label": "Task label field",
+    "description": "Field shown as the bar/row label, e.g. 'short_description'.",
+    "fieldType": "string",
+    "mandatory": true,
+    "defaultValue": "short_description"
+  },
+  {
+    "name": "startField",
+    "label": "Start date field",
+    "description": "Date/datetime field for the bar start, e.g. 'start_date' or 'planned_start_date'.",
+    "fieldType": "string",
+    "mandatory": true,
+    "defaultValue": "start_date"
+  },
+  {
+    "name": "endField",
+    "label": "End date field",
+    "description": "Date/datetime field for the bar end, e.g. 'end_date' or 'due_date'.",
+    "fieldType": "string",
+    "mandatory": true,
+    "defaultValue": "end_date"
+  },
+  {
+    "name": "groupField",
+    "label": "Group field (optional)",
+    "description": "Field used to colour bars and build the legend, e.g. 'type', a phase, or 'assignment_group'. Blank = one colour.",
+    "fieldType": "string",
+    "defaultValue": ""
+  },
+  {
+    "name": "progressField",
+    "label": "Progress field (optional)",
+    "description": "Numeric field for the progress overlay, e.g. 'percent_complete'. A 0..100 percent is normalised to 0..1.",
+    "fieldType": "string",
+    "defaultValue": ""
+  },
+  {
+    "name": "idField",
+    "label": "Id field (optional)",
+    "description": "Field used as the task id (defaults to the record's sys_id).",
+    "fieldType": "string",
+    "defaultValue": ""
+  },
+  {
+    "name": "colorField",
+    "label": "Color field (optional)",
+    "description": "Field holding a per-bar colour override (a CSS color / hex).",
+    "fieldType": "string",
+    "defaultValue": ""
+  },
+  {
+    "name": "useDisplayValue",
+    "label": "Use display values for labels/groups",
+    "description": "Label the bars and groups by display value (readable) instead of raw value.",
+    "fieldType": "boolean",
+    "defaultValue": true
+  },
+  {
+    "name": "maxTasks",
+    "label": "Max tasks",
+    "description": "Maximum bars to return (setLimit on the query). Default 500.",
+    "fieldType": "number",
+    "defaultValue": 500
+  },
+  {
+    "name": "sort",
+    "label": "Sort",
+    "description": "start-asc (default) | start-desc | end-asc | group | none.",
+    "fieldType": "string",
+    "defaultValue": "start-asc"
+  }
+]
